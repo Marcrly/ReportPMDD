@@ -1,0 +1,93 @@
+/*
+  Tokeny projektu ReportPMDD.
+  Zmiana koloru w jednym miejscu zmienia go w całej aplikacji.
+*/
+:root {
+  color-scheme: light;
+
+  /* Beże */
+  --beige-50: #fbf8f2;
+  --beige-100: #f7f2e9;
+  --beige-200: #f3ede2; /* tło aplikacji */
+  --beige-300: #ebe3d5;
+  --beige-400: #e2d8c7;
+  --beige-500: #cfc4b1;
+
+  /* Szałwia */
+  --sage-50: #f0f3ea;
+  --sage-100: #e2e9d9;
+  --sage-150: #d5dfca;
+  --sage-200: #cbd7bf;
+  --sage-300: #afc1a0;
+  --sage-400: #8fa682;
+  --sage-500: #738b67;
+  --sage-600: #5b7351;
+  --sage-700: #465c3f;
+  --sage-800: #344632;
+  --sage-900: #243223;
+
+  /* Akcenty: kwiaty i jagody */
+  --rose-100: #f4e3de;
+  --rose-300: #dda89d;
+  --rose-600: #a9604f; /* okres */
+  --honey-600: #9a6b12; /* owulacja */
+  --berry-100: #f3e3e7;
+  --berry-300: #c995a3;
+  --berry-700: #6f2b3e; /* ponad skalę */
+
+  /* Role */
+  --bg: var(--beige-200);
+  --surface: var(--beige-50);
+  --surface-sunk: var(--beige-100);
+  --line: #e4dbcb;
+  --line-strong: var(--beige-500);
+  --ink: #263228;
+  --ink-2: #4f5a4c;
+  --ink-3: #626b5b;
+  --on-dark: #ffffff;
+
+  --primary: var(--sage-700);
+  --primary-press: var(--sage-800);
+
+  /* Sekcja PMDD (ciemniejsza szałwia) i PMS (jaśniejsza szałwia) */
+  --pmdd: var(--sage-700);
+  --pmdd-card: var(--sage-150);
+  --pmdd-card-line: #b9c8ab;
+  --pms: var(--sage-200);
+  --pms-card: #eef2e7;
+  --pms-card-line: #dbe3d0;
+
+  /* Skala nasilenia 1-6: jedna barwa od jasnej do ciemnej, 6 = ponad skalę */
+  --sev-1: #f0f3ea;
+  --sev-2: #dce5d2;
+  --sev-3: #bccbaf;
+  --sev-4: #8fa682;
+  --sev-5: #5b7351;
+  --sev-6: var(--berry-700);
+
+  /* Kształt i głębia */
+  --r-xs: 8px;
+  --r-s: 12px;
+  --r-m: 16px;
+  --r-l: 22px;
+  --r-pill: 999px;
+  --shadow-1: 0 1px 2px rgba(38, 50, 40, 0.05), 0 4px 14px rgba(38, 50, 40, 0.05);
+  --shadow-2: 0 2px 6px rgba(38, 50, 40, 0.08), 0 12px 32px rgba(38, 50, 40, 0.12);
+  --focus: 0 0 0 3px rgba(70, 92, 63, 0.35);
+
+  /* Typografia */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
+  --font-ui: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Odstępy */
+  --gutter: 16px;
+  --nav-h: 64px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 340px) {
+  :root {
+    --gutter: 12px;
+  }
+}

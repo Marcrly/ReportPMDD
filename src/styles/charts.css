@@ -1,0 +1,365 @@
+/* ------------------------------------------------------------------ */
+/* Wykresy                                                             */
+/* ------------------------------------------------------------------ */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin-bottom: 10px;
+}
+
+.lk-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.lk-bar {
+  width: 10px;
+  height: 7px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.lk-band {
+  width: 14px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.lk-band--pre {
+  background: rgba(221, 168, 157, 0.4);
+}
+
+.lk-band--post {
+  background: rgba(143, 166, 130, 0.3);
+}
+
+.chart-frame {
+  position: relative;
+  touch-action: pan-y;
+  border-radius: 10px;
+}
+
+.chart-frame:focus-visible {
+  box-shadow: var(--focus);
+}
+
+.chart-frame svg {
+  display: block;
+  overflow: visible;
+}
+
+.chart-tip {
+  position: absolute;
+  z-index: 2;
+  width: 180px;
+  pointer-events: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-2);
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--ink-2);
+  transform: translateY(-8px);
+}
+
+.chart-tip strong {
+  color: var(--ink);
+  font-size: 13.5px;
+}
+
+.tip-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.tip-row i {
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.tip-row b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  min-width: 26px;
+}
+
+.tip-sub {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.chart-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  min-height: 38px;
+}
+
+.chart-foot .btn {
+  margin-left: auto;
+}
+
+.chart-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 12px;
+  min-height: 52px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.chart-readout strong {
+  flex-basis: 100%;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.chart-readout strong .muted {
+  font-weight: 500;
+}
+
+/* Wykres przed / po */
+.dumbbell-group + .dumbbell-group {
+  margin-top: 14px;
+}
+
+.dumbbell-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dumbbell-axis {
+  border-bottom: none;
+  min-height: 22px;
+}
+
+.dumbbell-label {
+  flex: none;
+  font-size: 13.5px;
+  line-height: 1.2;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.dumbbell-group-title {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dumbbell-group-title--pmdd {
+  color: var(--sage-700);
+}
+
+.dumbbell-group-title--pms {
+  color: var(--sage-600);
+}
+
+.dumbbell-delta {
+  flex: none;
+  text-align: right;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.dumbbell svg {
+  flex: none;
+  display: block;
+}
+
+.flag {
+  flex: none;
+  font-size: 11px;
+  font-weight: 750;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  background: var(--sage-800);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mapa objawów */
+.heatmap {
+  display: flex;
+  gap: 8px;
+}
+
+.heatmap-labels {
+  position: relative;
+  flex: none;
+  width: 136px;
+}
+
+.heatmap-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  font-size: 11.5px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ink-2);
+}
+
+.heatmap-label--pmdd::before,
+.heatmap-label--pms::before {
+  content: '';
+  flex: none;
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+.heatmap-label--pmdd::before {
+  background: var(--sage-700);
+}
+
+.heatmap-label--pms::before {
+  background: var(--sage-300);
+}
+
+.heatmap-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+  /* delikatne wygaszenie przy prawej krawędzi podpowiada, że można przewinąć */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 18px), transparent);
+}
+
+.heatmap-scroll.is-end {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.heatmap-scroll svg {
+  display: block;
+}
+
+.heatmap-detail {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.cycle-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+}
+
+.cycle-pager-label {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.cycle-pager-label small {
+  display: block;
+  font-weight: 500;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+/* Kropki na skali (sen, aktywność) */
+.dotscale {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dotscale-row {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 32px;
+  font-size: 14px;
+}
+
+.dotscale-row .value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  min-width: 70px;
+  text-align: right;
+}
+
+.dotscale-row .value small {
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.dotscale-track {
+  position: relative;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--beige-300);
+}
+
+.dotscale-track i {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: var(--sage-700);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.compare-table {
+  table-layout: fixed;
+}
+
+.compare-table th:first-child,
+.compare-table td:first-child {
+  width: 40%;
+  color: var(--ink-2);
+}
