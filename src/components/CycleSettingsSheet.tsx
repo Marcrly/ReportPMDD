@@ -69,6 +69,7 @@ export function CycleSettingsSheet({ onClose }: { onClose: () => void }) {
               unit="dni"
             />
           </div>
+          <p className="q-hint">Tyle dni zaznaczę automatycznie, gdy zaznaczysz pierwszy dzień okresu. Każdy okres możesz skrócić lub przedłużyć.</p>
         </div>
       ) : (
         <p className="small" style={{ marginTop: 8 }}>

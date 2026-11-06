@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { SeriesPoint } from '../lib/analysis';
 import { formatShort, formatWeekdayDayMonth } from '../lib/dates';
-import { flowLabel, isBleeding } from '../lib/questionnaire';
+import { flowLabel, flowText, isBleeding } from '../lib/questionnaire';
 import type { ISODate } from '../lib/types';
 import { C, TableToggle, fmt1, useWidth } from './common';
 
@@ -122,7 +122,7 @@ export function Timeline({ points, ovulations, preWindows }: Props) {
                   PMS <b>{fmt1(hp.pms)}</b>
                 </span>
                 {hp.sleepHours !== null && <span className="tip-sub">sen {fmt1(hp.sleepHours)} h</span>}
-                {hp.flow && hp.flow !== 'none' && <span className="tip-sub">{flowLabel(hp.flow).toLowerCase()} krwawienie</span>}
+                {flowText(hp.flow) && <span className="tip-sub">{flowText(hp.flow)}</span>}
                 {ovulations.has(hp.date) && <span className="tip-sub">szacowana owulacja</span>}
               </>
             ) : (

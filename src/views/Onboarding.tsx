@@ -5,6 +5,8 @@ import { INSTALL_STEPS, detectPlatform, useInstallPrompt } from '../lib/install'
 import { isStandalone } from '../lib/share';
 import type { CycleSettings } from '../lib/types';
 import { useApp } from '../state/AppContext';
+import { usePeriodActions } from '../state/usePeriodActions';
+import { isBleeding } from '../lib/questionnaire';
 import { Bloom, Bouquet, Sprig } from '../components/Botanical';
 import { IconShield } from '../components/Icons';
 import { Stepper } from '../components/ui';
@@ -12,7 +14,8 @@ import { Stepper } from '../components/ui';
 const STEPS = 5;
 
 export function Onboarding({ onDone }: { onDone: () => void }) {
-  const { meta, updateMeta, updateEntry, cycleSettings } = useApp();
+  const { meta, updateMeta, cycleSettings, entries } = useApp();
+  const { setFlow } = usePeriodActions();
   const [step, setStep] = useState(0);
   const [cycle, setCycle] = useState<CycleSettings>(meta.cycleSettings ?? DEFAULT_CYCLE_SETTINGS);
   const [lastStart, setLastStart] = useState('');
@@ -22,8 +25,9 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
   const finish = async () => {
     await updateMeta({ onboardingDone: true, cycleSettings: { ...cycleSettings, ...cycle } });
-    if (lastStart && isISODate(lastStart) && lastStart <= today) {
-      updateEntry(lastStart, (e) => ({ ...e, flow: e.flow && e.flow !== 'none' && e.flow !== 'spotting' ? e.flow : 'medium' }));
+    if (lastStart && isISODate(lastStart) && lastStart <= today && !isBleeding(entries.get(lastStart)?.flow)) {
+      // Zaznacza cały ostatni okres według podanej długości (można go potem skrócić lub przedłużyć).
+      setFlow(lastStart, 'period', cycle.periodLength);
     }
     onDone();
   };
@@ -98,7 +102,10 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             <h1 className="ob-title" id="ob-title">
               Twój cykl
             </h1>
-            <p className="ob-text">Podaj średnie wartości, jeśli je znasz. Po kilku cyklach aplikacja podpowie je na podstawie Twoich danych.</p>
+            <p className="ob-text">
+              Podaj średnie wartości, jeśli je znasz. Gdy zaznaczysz pierwszy dzień okresu, aplikacja sama zaznaczy kolejne dni według długości
+              okresu. Po kilku cyklach podpowie te wartości na podstawie Twoich danych.
+            </p>
             <div className="ob-fields">
               <div className="field-row">
                 <span>Długość cyklu</span>

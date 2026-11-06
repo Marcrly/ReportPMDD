@@ -3,6 +3,7 @@ import { dayLevel, hasAnyAnswer, hasRatings } from '../lib/analysis';
 import { daysUntilPredicted, isPredictedPeriodDay, positionOf } from '../lib/cycles';
 import {
   WEEKDAYS_SHORT,
+  addDays,
   calendarToday,
   formatDayMonth,
   formatMonthYear,
@@ -13,12 +14,14 @@ import {
   weekdayMondayFirst,
 } from '../lib/dates';
 import { INSTALL_STEPS, detectPlatform, useInstallPrompt } from '../lib/install';
+import { activePeriod, hasDataBesidesFlow, type ActivePeriod } from '../lib/periods';
 import { allSymptoms, isBleeding } from '../lib/questionnaire';
 import { hrefFor, navigate } from '../lib/router';
 import { isStandalone } from '../lib/share';
 import type { DayEntry, ISODate } from '../lib/types';
 import { useApp } from '../state/AppContext';
 import { useFileActions } from '../state/useFileActions';
+import { usePeriodActions } from '../state/usePeriodActions';
 import { Bloom, LeafMark, Sprig } from '../components/Botanical';
 import { CycleSettingsSheet } from '../components/CycleSettingsSheet';
 import {
@@ -43,9 +46,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const BACKUP_EVERY_DAYS = 7;
 
 export function CalendarView({ month, setMonth }: { month: MonthState; setMonth: (m: MonthState) => void }) {
-  const { entries, info, today, meta, updateEntry, cycleSettings, updateMeta } = useApp();
+  const { entries, info, today, meta, cycleSettings, updateMeta } = useApp();
   const { backup } = useFileActions();
+  const periodActions = usePeriodActions();
   const [marking, setMarking] = useState(false);
+  const [endSheet, setEndSheet] = useState(false);
   const [cycleSheet, setCycleSheet] = useState(false);
   const [installSheet, setInstallSheet] = useState(false);
   const [backupSnoozed, setBackupSnoozed] = useState(false);
@@ -62,6 +67,7 @@ export function CalendarView({ month, setMonth }: { month: MonthState; setMonth:
   const toNext = daysUntilPredicted(info, today);
   const ovu = info.prediction?.currentOvulation ?? null;
   const bleedingToday = isBleeding(todayEntry?.flow);
+  const active = useMemo(() => activePeriod(entries.values(), realToday), [entries, realToday]);
 
   // ------- kopia zapasowa -------
   const entryCount = useMemo(() => [...entries.values()].filter(hasAnyAnswer).length, [entries]);
@@ -99,14 +105,14 @@ export function CalendarView({ month, setMonth }: { month: MonthState; setMonth:
     if (Math.abs(dx) > 60 && Math.abs(dy) < 40) shift(dx < 0 ? 1 : -1);
   };
 
-  const togglePeriod = (date: ISODate) => {
-    updateEntry(date, (e: DayEntry) => ({ ...e, flow: isBleeding(e.flow) ? undefined : 'medium' }));
-  };
-
   const onDay = (date: ISODate) => {
+    if (marking) {
+      if (!canMark(date, entries, realToday)) return;
+      periodActions.setFlow(date, isBleeding(entries.get(date)?.flow) ? undefined : 'period');
+      return;
+    }
     if (date > realToday) return;
-    if (marking) togglePeriod(date);
-    else navigate(hrefFor.day(date));
+    navigate(hrefFor.day(date));
   };
 
   const { stats, prediction } = info;
@@ -204,6 +210,16 @@ export function CalendarView({ month, setMonth }: { month: MonthState; setMonth:
         )}
       </section>
 
+      {active && (
+        <PeriodCard
+          period={active}
+          today={realToday}
+          standard={periodActions.periodLength}
+          onEnd={() => setEndSheet(true)}
+          onExtend={() => periodActions.extendPeriod(active)}
+        />
+      )}
+
       {needsBackup && (
         <div className="banner banner--warn" role="note">
           <IconShield className="banner-icon" />
@@ -253,7 +269,8 @@ export function CalendarView({ month, setMonth }: { month: MonthState; setMonth:
         {marking && (
           <div className="mark-banner" role="status">
             <span>
-              <strong>Zaznaczanie okresu.</strong> Stuknij dni, w które było krwawienie.
+              <strong>Zaznaczanie okresu.</strong> Stuknij pierwszy dzień, a zaznaczę {periodActions.periodLength}{' '}
+              {plDays(periodActions.periodLength)}. Stuknij zaznaczony dzień, by skrócić okres, albo dzień po nim, by go przedłużyć.
             </span>
             <button type="button" className="btn btn--primary btn--small" onClick={() => setMarking(false)}>
               Gotowe
@@ -393,6 +410,31 @@ export function CalendarView({ month, setMonth }: { month: MonthState; setMonth:
       </section>
 
       {cycleSheet && <CycleSettingsSheet onClose={() => setCycleSheet(false)} />}
+      {endSheet && active && (
+        <Sheet title="Który dzień był ostatni?" onClose={() => setEndSheet(false)}>
+          <p className="muted small">Dni okresu po wybranym dniu zostaną odznaczone.</p>
+          <div className="choices" style={{ marginTop: 14 }}>
+            {lastDayOptions(active, realToday).map((d, i) => (
+              <button
+                key={d}
+                type="button"
+                className="choice"
+                onClick={() => {
+                  periodActions.endPeriod(active, d);
+                  setEndSheet(false);
+                }}
+              >
+                Dzień {i + 1} <small>{d === realToday ? 'dziś' : formatShort(d)}</small>
+              </button>
+            ))}
+          </div>
+          <div className="sheet-actions">
+            <button type="button" className="btn btn--secondary btn--block" onClick={() => setEndSheet(false)}>
+              Anuluj
+            </button>
+          </div>
+        </Sheet>
+      )}
       {installSheet && (
         <Sheet title="Dodaj do ekranu początkowego" onClose={() => setInstallSheet(false)}>
           <ol className="ob-list">
@@ -427,14 +469,78 @@ function nextOvulation(list: ISODate[], today: ISODate): string | null {
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/**
+ * Które dni można stuknąć w trybie zaznaczania okresu: wszystkie do dziś,
+ * a w przyszłości tylko zaznaczone (żeby skrócić) i dzień tuż po zaznaczonym (żeby przedłużyć).
+ */
+function canMark(date: ISODate, entries: Map<ISODate, DayEntry>, realToday: ISODate): boolean {
+  if (date <= realToday) return true;
+  return isBleeding(entries.get(date)?.flow) || isBleeding(entries.get(addDays(date, -1))?.flow);
+}
+
+/** Dni do wyboru jako ostatni dzień okresu: od pierwszego do dziś (albo do końca, jeśli wcześniej). */
+function lastDayOptions(period: ActivePeriod, realToday: ISODate): ISODate[] {
+  const out: ISODate[] = [];
+  const until = period.end < realToday ? period.end : realToday;
+  for (let d = period.start; d <= until; d = addDays(d, 1)) out.push(d);
+  return out;
+}
+
+function PeriodCard({
+  period,
+  today,
+  standard,
+  onEnd,
+  onExtend,
+}: {
+  period: ActivePeriod;
+  today: ISODate;
+  standard: number;
+  onEnd: () => void;
+  onExtend: () => void;
+}) {
+  const ongoing = period.day <= period.length;
+  return (
+    <section className="card period-card" aria-labelledby="period-title">
+      <div className="period-head">
+        <span className="period-icon" aria-hidden="true">
+          <IconDrop size={20} />
+        </span>
+        <div>
+          <h2 className="card-title" id="period-title">
+            {ongoing ? `Okres: dzień ${period.day} z ${period.length}` : `Okres trwał ${period.length} ${plDays(period.length)}`}
+          </h2>
+          <p className="card-sub">
+            {ongoing
+              ? `Zaznaczony do ${formatDayMonth(period.end)}${period.autoDays ? `, standardowo ${standard} ${plDays(standard)}` : ''}. Jeśli skończy się wcześniej albo potrwa dłużej, zmień to tutaj.`
+              : `Ostatni zaznaczony dzień: ${formatDayMonth(period.end)}. Jeśli krwawienie trwa nadal, przedłuż okres.`}
+          </p>
+        </div>
+      </div>
+      <div className="period-actions">
+        {ongoing && period.end >= today && period.length > 1 && (
+          <button type="button" className="btn btn--outline btn--small" onClick={onEnd}>
+            Skończył się wcześniej
+          </button>
+        )}
+        <button type="button" className="btn btn--outline btn--small" onClick={onExtend}>
+          Przedłuż o 1 dzień
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function DayCell({ date, marking, realToday, onClick }: { date: ISODate; marking: boolean; realToday: ISODate; onClick: (d: ISODate) => void }) {
   const { entries, info } = useApp();
   const e = entries.get(date);
   const level = dayLevel(e);
-  const logged = hasAnyAnswer(e);
+  // Dzień, w którym zaznaczony jest tylko okres, pokazuje samą kroplę (bez tła "jest wpis").
+  const logged = hasDataBesidesFlow(e);
   const bleeding = isBleeding(e?.flow);
   const spotting = e?.flow === 'spotting';
   const future = date > realToday;
+  const markable = marking && canMark(date, entries, realToday);
   const predicted = isPredictedPeriodDay(date, info, realToday);
   const ovulation = info.ovulationDays.has(date);
   const isToday = date === realToday;
@@ -444,7 +550,7 @@ function DayCell({ date, marking, realToday, onClick }: { date: ISODate; marking
   if (isToday) parts.push('dziś');
   if (level !== null) parts.push(`nasilenie PMDD ${level} z 6`);
   else if (logged) parts.push('jest wpis');
-  if (bleeding) parts.push('okres');
+  if (bleeding) parts.push(future ? 'okres zaznaczony z wyprzedzeniem' : e?.periodAuto ? 'okres, zaznaczony automatycznie' : 'okres');
   if (spotting) parts.push('plamienie');
   if (predicted) parts.push('prognoza okresu');
   if (ovulation) parts.push('szacowana owulacja');
@@ -456,8 +562,9 @@ function DayCell({ date, marking, realToday, onClick }: { date: ISODate; marking
     isToday && 'is-today',
     future && 'is-future',
     predicted && 'is-predicted',
-    marking && !future && 'is-marking',
+    markable && 'is-marking',
     bleeding && 'is-period',
+    bleeding && future && 'is-planned',
   ]
     .filter(Boolean)
     .join(' ');
@@ -469,7 +576,7 @@ function DayCell({ date, marking, realToday, onClick }: { date: ISODate; marking
       data-level={level ?? undefined}
       aria-label={parts.join(', ')}
       aria-pressed={marking ? bleeding : undefined}
-      disabled={future}
+      disabled={marking ? !markable : future}
       onClick={() => onClick(date)}
     >
       <span>{day}</span>

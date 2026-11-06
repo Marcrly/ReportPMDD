@@ -45,7 +45,8 @@ export function hasAnyAnswer(e: DayEntry | undefined): boolean {
     e.sleepQuality !== undefined ||
     e.sleepHours !== undefined ||
     e.activity !== undefined ||
-    e.flow !== undefined ||
+    // dzień okresu zaznaczony automatycznie nie jest jeszcze "wpisem"
+    (e.flow !== undefined && !e.periodAuto) ||
     Boolean(e.note?.trim())
   );
 }

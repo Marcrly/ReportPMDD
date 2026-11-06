@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useMemo, useState } from 'react';
 import { positionOf } from '../lib/cycles';
-import { calendarToday, formatLong, formatShort } from '../lib/dates';
-import { FLOW, INTENSITY, SLEEP_QUALITY, SUPPORT_TRIGGER_IDS, isBleeding, sectionSymptoms } from '../lib/questionnaire';
+import { calendarToday, formatLong, formatShort, plDays } from '../lib/dates';
+import { FLOW, INTENSITY, SLEEP_QUALITY, isBleeding, sectionSymptoms } from '../lib/questionnaire';
 import { goBack } from '../lib/router';
 import type { DayEntry, Flow, ISODate, Rating, SectionId, Symptom } from '../lib/types';
 import { useApp } from '../state/AppContext';
@@ -9,11 +9,12 @@ import { Sprig } from '../components/Botanical';
 import { IconAlert, IconBack, IconCheck, IconDrop, IconFlower, IconMoon, IconTrash, IconWalk } from '../components/Icons';
 import { SymptomItem } from '../components/SymptomItem';
 import { ChoiceGroup, Sheet, Stepper, useToast } from '../components/ui';
-import { SupportNumbers } from '../components/SupportNumbers';
+import { usePeriodActions } from '../state/usePeriodActions';
 
 export function DayView({ date }: { date: ISODate }) {
   const { entries, meta, info, updateEntry, deleteEntry, saveState, flush } = useApp();
   const toast = useToast();
+  const { setFlow, periodLength } = usePeriodActions();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const entry = entries.get(date);
   const future = date > calendarToday();
@@ -81,8 +82,6 @@ export function DayView({ date }: { date: ISODate }) {
   }
 
   const answered = (list: Symptom[]) => list.filter((s) => entry?.ratings[s.id] !== undefined).length;
-  const showSupport =
-    !!entry && (SUPPORT_TRIGGER_IDS.some((id) => entry.ratings[id] === 6) || (entry.ratings.drsp2 !== undefined && entry.ratings.drsp2 >= 5));
 
   const subtitle = [
     pos.cycleDay !== null ? `Dzień ${pos.cycleDay} cyklu` : null,
@@ -208,11 +207,22 @@ export function DayView({ date }: { date: ISODate }) {
           <ChoiceGroup<Flow>
             label="Krwawienie"
             options={FLOW.map((f) => ({ value: f.value, label: f.label }))}
-            value={entry?.flow}
-            onChange={(v) => update((e) => ({ ...e, flow: v }))}
+            value={entry?.flow === 'period' ? undefined : entry?.flow}
+            onChange={(v) => setFlow(date, v)}
             optionClassName="choice--flow"
           />
-          <p className="q-hint">Pierwszy dzień krwawienia (lekkiego lub mocniejszego) to 1. dzień cyklu. Plamienie go nie rozpoczyna.</p>
+          {entry?.flow === 'period' ? (
+            <p className="q-hint period-hint">
+              <IconDrop size={14} style={{ color: 'var(--rose-600)', verticalAlign: '-2px' }} />{' '}
+              {entry.periodAuto ? 'Dzień okresu zaznaczony automatycznie.' : 'Dzień okresu zaznaczony w kalendarzu.'} Możesz podać ilość krwawienia.
+              Wybierz „Brak”, jeśli okres już się skończył.
+            </p>
+          ) : (
+            <p className="q-hint">
+              Pierwszy dzień krwawienia to 1. dzień cyklu. Zaznaczę wtedy cały okres ({periodLength} {plDays(periodLength)}), a Ty możesz go skrócić
+              lub przedłużyć. Plamienie nie rozpoczyna okresu.
+            </p>
+          )}
           {ovulation && (
             <p className="q-hint">
               <IconFlower size={14} style={{ color: 'var(--honey-600)', verticalAlign: '-2px' }} /> To szacowany dzień owulacji (14 dni przed
@@ -222,15 +232,7 @@ export function DayView({ date }: { date: ISODate }) {
         </div>
       </section>
 
-      <Section id="sec-pmdd" section="pmdd" symptoms={pmdd} entry={entry} onRate={onRate} onEvent={onEvent} onFillRest={fillRest}>
-        {showSupport && (
-          <div className="support" role="note">
-            <strong>To był bardzo ciężki dzień.</strong>
-            Jeśli potrzebujesz z kimś porozmawiać, możesz zadzwonić o każdej porze.
-            <SupportNumbers />
-          </div>
-        )}
-      </Section>
+      <Section id="sec-pmdd" section="pmdd" symptoms={pmdd} entry={entry} onRate={onRate} onEvent={onEvent} onFillRest={fillRest} />
 
       <Section id="sec-pms" section="pms" symptoms={pms} entry={entry} onRate={onRate} onEvent={onEvent} onFillRest={fillRest} />
 

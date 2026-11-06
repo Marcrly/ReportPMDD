@@ -1,7 +1,8 @@
 /** Ocena objawu: 1-5 to skala, 6 to "ponad skalę" (odpowiada 6 = "extreme" w DRSP). */
 export type Rating = 1 | 2 | 3 | 4 | 5 | 6;
 
-export type Flow = 'none' | 'spotting' | 'light' | 'medium' | 'heavy';
+/** 'period' = dzień okresu bez podanej ilości krwawienia (np. zaznaczony w kalendarzu albo automatycznie). */
+export type Flow = 'none' | 'spotting' | 'light' | 'medium' | 'heavy' | 'period';
 export type Intensity = 'light' | 'moderate' | 'vigorous';
 export type SleepQuality = 1 | 2 | 3 | 4 | 5;
 export type SectionId = 'pmdd' | 'pms';
@@ -18,6 +19,8 @@ export interface DayEntry {
   activityMinutes?: number;
   activityIntensity?: Intensity;
   flow?: Flow;
+  /** true = dzień okresu zaznaczony automatycznie według standardowej długości okresu */
+  periodAuto?: boolean;
   /** id objawu -> ocena */
   ratings: Record<string, Rating>;
   /** id objawu -> opis zdarzenia. Obecność klucza = zaznaczone "zdarzenie powiązane". */

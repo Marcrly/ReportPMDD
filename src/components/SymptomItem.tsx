@@ -21,7 +21,7 @@ function SymptomItemBase({ symptom, value, event, onRate, onEvent }: Props) {
   const btns = useRef<(HTMLButtonElement | null)[]>([]);
   const hasEvent = event !== undefined;
   const [noteOpen, setNoteOpen] = useState(hasEvent);
-  const showEventToggle = (value !== undefined && value >= 2) || hasEvent;
+  const showEventToggle = value !== undefined || hasEvent;
   const selected = SCALE.find((s) => s.value === value);
 
   const onKey = (e: React.KeyboardEvent, i: number) => {

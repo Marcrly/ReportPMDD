@@ -154,12 +154,6 @@ export const IconShield = (p: P) => (
   </Svg>
 );
 
-export const IconPhone = (p: P) => (
-  <Svg {...p}>
-    <path d="M6.6 3.5h2.6l1.5 4-2 1.3a11 11 0 0 0 6.5 6.5l1.3-2 4 1.5v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z" />
-  </Svg>
-);
-
 export const IconInfo = (p: P) => (
   <Svg {...p}>
     <circle cx="12" cy="12" r="8.5" />

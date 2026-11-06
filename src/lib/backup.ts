@@ -28,7 +28,7 @@ export function createBackup(entries: DayEntry[], customSymptoms: CustomSymptom[
 
 export class BackupError extends Error {}
 
-const FLOWS: Flow[] = ['none', 'spotting', 'light', 'medium', 'heavy'];
+const FLOWS: Flow[] = ['none', 'spotting', 'light', 'medium', 'heavy', 'period'];
 const INTENSITIES: Intensity[] = ['light', 'moderate', 'vigorous'];
 const SECTIONS: SectionId[] = ['pmdd', 'pms'];
 const ID_RE = /^[a-zA-Z0-9_-]{1,64}$/;
@@ -70,6 +70,7 @@ export function sanitizeEntry(raw: unknown, fallbackTime = new Date(0).toISOStri
   }
   if (INTENSITIES.includes(raw.activityIntensity as Intensity)) e.activityIntensity = raw.activityIntensity as Intensity;
   if (FLOWS.includes(raw.flow as Flow)) e.flow = raw.flow as Flow;
+  if (raw.periodAuto === true && e.flow === 'period') e.periodAuto = true;
   const note = text(raw.note);
   if (note) e.note = note;
   return e;

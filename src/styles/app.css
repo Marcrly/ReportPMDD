@@ -792,6 +792,51 @@ a {
   border: 2px solid var(--rose-600);
 }
 
+.cal-day.is-planned .cal-marks {
+  opacity: 0.55;
+}
+
+.period-card {
+  background: linear-gradient(180deg, var(--rose-100), var(--surface) 70%);
+  border-color: #ecd0c8;
+}
+
+.period-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.period-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid #ecd0c8;
+  color: var(--rose-600);
+}
+
+.period-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+@media (min-width: 420px) {
+  .period-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.period-hint {
+  color: var(--ink-2);
+}
+
 .cal-marks {
   display: flex;
   gap: 2px;
@@ -1316,25 +1361,6 @@ a {
   display: flex;
   justify-content: center;
   margin: 4px 0 6px;
-}
-
-.support {
-  margin: 4px 0 12px;
-  padding: 14px;
-  border-radius: var(--r-m);
-  background: var(--berry-100);
-  border: 1px solid #e4c6ce;
-  font-size: 14.5px;
-}
-
-.support strong {
-  display: block;
-  margin-bottom: 4px;
-}
-
-.support a {
-  color: var(--berry-700);
-  font-weight: 700;
 }
 
 .done-bar {
@@ -1891,21 +1917,6 @@ a {
 .custom-list .is-archived {
   color: var(--ink-3);
   text-decoration: line-through;
-}
-
-.phone-list {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
-}
-
-.phone-list li {
-  padding: 6px 0;
-}
-
-.phone-list a {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
 }
 
 .details summary {

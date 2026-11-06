@@ -5,8 +5,9 @@ Prywatna aplikacja na telefon do codziennego zapisywania objawów PMDD i PMS, ś
 - **Kalendarz** jak w aplikacjach do śledzenia okresu: kolor dnia pokazuje nasilenie objawów, kropla to okres, kwiat to szacowana owulacja, przerywana ramka to prognoza okresu.
 - **Wpis dnia** (najlepiej wieczorem): sen, aktywność fizyczna, krwawienie, potem pytania o PMDD (ciemna zieleń) i PMS (jasna zieleń).
 - **Skala 1-5 + „ponad skalę”**: 1 = nie czułam, 5 = silnie, „ponad skalę” = nie do opisania. To dokładnie 6-stopniowa skala kwestionariusza DRSP, więc lekarz może od razu korzystać z Twoich danych.
-- **Zdarzenie powiązane** przy każdym objawie: zaznaczasz, że objaw mógł mieć przyczynę w wydarzeniu z życia, i dopisujesz, co to było.
-- **Twój cykl**: wpisujesz średnią długość cyklu i okresu, a aplikacja podpowiada te wartości na podstawie ostatnich 4 cykli. Okres zaznaczasz w kalendarzu przyciskiem „Zaznacz okres” albo we wpisie dnia.
+- **Zdarzenie powiązane** przy każdym ocenionym objawie (także ocenionym na 1): zaznaczasz, że objaw mógł mieć przyczynę w wydarzeniu z życia, i dopisujesz, co to było.
+- **Twój cykl**: wpisujesz średnią długość cyklu i okresu, a aplikacja podpowiada te wartości na podstawie ostatnich 4 cykli.
+- **Automatyczny okres**: gdy zaznaczysz pierwszy dzień okresu (w kalendarzu przyciskiem „Zaznacz okres” albo we wpisie dnia), aplikacja sama zaznaczy kolejne dni według ustawionej długości okresu. Okres skrócisz przyciskiem „Skończył się wcześniej” (albo wybierając „Brak” we wpisie dnia) i przedłużysz przyciskiem „Przedłuż o 1 dzień”.
 - **Analiza**: przebieg objawów dzień po dniu, porównanie „tydzień przed okresem a po okresie”, mapa objawów w cyklu, sen i aktywność, lista zdarzeń powiązanych.
 - **Eksport do Excela** (.xlsx, 4 arkusze) i **kopia zapasowa** (.json) z przywracaniem.
 
@@ -71,7 +72,6 @@ Zrób to **przed pierwszym wpisem** i od tej pory otwieraj dziennik tylko ikoną
 
 - To narzędzie do samoobserwacji, nie do diagnozy. Do oceny PMDD zaleca się codzienne wpisy przez co najmniej 2 cykle i konsultację z lekarzem (psychiatrą lub ginekologiem).
 - Owulacja jest szacowana kalendarzowo (14 dni przed kolejnym okresem). To przybliżenie, które nie nadaje się do antykoncepcji.
-- Wsparcie w kryzysie: 800 70 2222 (całodobowo, bezpłatnie), 116 123, w nagłym zagrożeniu 112. Numery są też w aplikacji.
 
 ## Dla osoby technicznej
 

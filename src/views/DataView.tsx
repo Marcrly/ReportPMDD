@@ -10,7 +10,6 @@ import { useFileActions } from '../state/useFileActions';
 import { Sprig } from '../components/Botanical';
 import { CycleSettingsSheet } from '../components/CycleSettingsSheet';
 import { IconAlert, IconCheckCircle, IconDownload, IconPlus, IconShield, IconTable, IconUpload } from '../components/Icons';
-import { SupportNumbers } from '../components/SupportNumbers';
 import { ChoiceGroup, Sheet, useToast } from '../components/ui';
 
 export const APP_VERSION = '1.0.0';
@@ -252,14 +251,6 @@ export function DataView({ onShowIntro }: { onShowIntro: () => void }) {
         <button type="button" className="btn btn--secondary" style={{ marginTop: 14 }} onClick={() => void addCustom()} disabled={!newLabel.trim()}>
           <IconPlus size={18} /> Dodaj objaw
         </button>
-      </section>
-
-      <section className="card" aria-labelledby="sp-title">
-        <h2 className="card-title" id="sp-title">
-          Wsparcie
-        </h2>
-        <p className="card-sub">Gdy jest bardzo ciężko, nie musisz czekać na wizytę. Możesz zadzwonić:</p>
-        <SupportNumbers />
       </section>
 
       <section className="card" aria-labelledby="ab-title">

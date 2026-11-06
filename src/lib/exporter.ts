@@ -1,6 +1,6 @@
 import { compareOnset, meanScore, pmddScore } from './analysis';
 import { analyzeCycles, isOvulationDay, positionOf, type CycleInfo } from './cycles';
-import { excelSerial, formatNumeric } from './dates';
+import { excelSerial, formatNumeric, toISO } from './dates';
 import { DOMAINS, DRSP_CORE_IDS, SCALE, allSymptoms, flowLabel, intensityLabel, sleepLabel } from './questionnaire';
 import type { CustomSymptom, CycleSettings, DayEntry, ISODate, Symptom } from './types';
 import { buildXlsx, type Cell, type Sheet, type StyleKey } from './xlsx';
@@ -37,7 +37,9 @@ export function buildWorkbook(
   settings?: CycleSettings,
   now = new Date(),
 ): Uint8Array {
-  const entries = [...entriesIn].sort((a, b) => (a.date < b.date ? -1 : 1));
+  // Dni zaznaczone z wyprzedzeniem (przyszłe dni okresu) nie trafiają do arkusza.
+  const cutoff = toISO(now);
+  const entries = entriesIn.filter((e) => e.date <= cutoff).sort((a, b) => (a.date < b.date ? -1 : 1));
   const byDate = new Map(entries.map((e) => [e.date, e]));
   const info = analyzeCycles(entries, today, settings);
   const symptoms = exportSymptoms(entries, custom);
@@ -79,7 +81,7 @@ export function buildWorkbook(
       { v: pos.cycleDay, s: 'center' },
       { v: pos.daysToNext, s: 'center' },
       { v: phaseLabel(e.date, e, info) },
-      { v: e.flow ? flowLabel(e.flow) : null },
+      { v: e.flow ? flowLabel(e.flow, e.periodAuto) : null },
       { v: e.sleepQuality ?? null, s: 'center' },
       { v: e.sleepQuality ? sleepLabel(e.sleepQuality) : null },
       { v: e.sleepHours ?? null, s: 'decimal' },
@@ -189,6 +191,12 @@ export function buildWorkbook(
     [],
     [{ v: 'Jak czytać', s: 'bold' }],
     [{ v: 'Dzień 1 cyklu to pierwszy dzień krwawienia (lekkiego, średniego lub obfitego; plamienie się nie liczy).', s: 'wrap' }],
+    [
+      {
+        v: '"Okres" w kolumnie Krwawienie to dzień okresu bez podanej ilości krwawienia. "Okres (auto)" to dzień zaznaczony automatycznie według standardowej długości okresu.',
+        s: 'wrap',
+      },
+    ],
     [
       {
         v: 'Owulacja jest szacowana kalendarzowo: 14 dni przed kolejnym okresem. To przybliżenie, które nie nadaje się do planowania antykoncepcji.',

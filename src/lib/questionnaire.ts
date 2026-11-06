@@ -302,12 +302,19 @@ export const INTENSITY: { value: Intensity; label: string; hint: string }[] = [
   { value: 'vigorous', label: 'Intensywna', hint: 'bieg, trening' },
 ];
 
-export const flowLabel = (f?: Flow) => FLOW.find((x) => x.value === f)?.label ?? '';
+/** Nazwa krwawienia do tabel i eksportu, np. "Średnie", "Okres", "Okres (auto)". */
+export const flowLabel = (f?: Flow, auto?: boolean) =>
+  f === 'period' ? (auto ? 'Okres (auto)' : 'Okres') : (FLOW.find((x) => x.value === f)?.label ?? '');
+
+/** Opis krwawienia w zdaniu, np. "średnie krwawienie", "dzień okresu". */
+export function flowText(f?: Flow): string {
+  if (!f || f === 'none') return '';
+  if (f === 'period') return 'dzień okresu';
+  if (f === 'spotting') return 'plamienie';
+  return `${flowLabel(f).toLowerCase()} krwawienie`;
+}
 export const sleepLabel = (q?: number) => SLEEP_QUALITY.find((x) => x.value === q)?.label ?? '';
 export const intensityLabel = (i?: Intensity) => INTENSITY.find((x) => x.value === i)?.label ?? '';
 
 /** Krwawienie liczone jako miesiączka (plamienie nie rozpoczyna okresu, zgodnie z konwencją DRSP/C-PASS). */
-export const isBleeding = (f?: Flow) => f === 'light' || f === 'medium' || f === 'heavy';
-
-/** Objawy nastroju, przy których pokazujemy dyskretną informację o wsparciu. */
-export const SUPPORT_TRIGGER_IDS = ['drsp1', 'drsp2', 'drsp3', 'drsp16', 'drsp17'];
+export const isBleeding = (f?: Flow) => f === 'light' || f === 'medium' || f === 'heavy' || f === 'period';
